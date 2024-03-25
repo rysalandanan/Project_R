@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TankStatus : MonoBehaviour
 {
-    private Shell shell;
+    private MainGunShell shell;
     private bool canMove = true;
     private bool isGunnerAlive = true;
     private bool isLeftTrackHit = false;
@@ -43,7 +43,7 @@ public class TankStatus : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Shell"))
         {
-            shell = collision.gameObject.GetComponent<Shell>();
+            shell = collision.gameObject.GetComponent<MainGunShell>();
             switch (shell.hitTag)
             {
                 case "FrontArmor":

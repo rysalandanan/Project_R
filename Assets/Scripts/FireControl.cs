@@ -1,15 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-public class TankShoot : MonoBehaviour
+public class FireControl : MonoBehaviour
 {
     [Header("Main Gun Attributes")]
     [SerializeField] private Transform mainGunBarrel;
     [SerializeField] private float shellVelocity;
     [SerializeField] private float mainGunReloadSpeed;
     [SerializeField] private GameObject mainGunMuzzleFlash;
-    [SerializeField] private TankShellPool shellPool;
     [SerializeField] private int shellCapacity;
+    [SerializeField] private float mainGunSpread;
+    [SerializeField] private AudioSource mainGunSFX;
+    private float mainGunAccuracy;
     private int shellFired;
     private bool canFireMainGun = true;
 
@@ -20,8 +22,14 @@ public class TankShoot : MonoBehaviour
     [SerializeField] private GameObject coaxialGunMuzzleFlash;
     [SerializeField] private float coaxialGunBulletSpread;
     [SerializeField] private float coaxialGunRateOfFire;
+    [SerializeField] private AudioSource coaxialGunSFX;
     private bool canFireCMG = true;
 
+    private Rigidbody2D rb;
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
     private void Update()
     {
         if(Input.GetMouseButton(0) && canFireMainGun && shellFired < shellCapacity)
@@ -42,19 +50,32 @@ public class TankShoot : MonoBehaviour
             Rigidbody2D tankShell_RB = tankShell.GetComponent<Rigidbody2D>();
             if (tankShell_RB != null)
             {
+
+                Vector2 barrelDirection = mainGunBarrel.up;
+
+                AccuracyCheck();
+
+                //Main Gun Accuracy
+                float spreadAngle = Random.Range(-mainGunAccuracy, mainGunAccuracy);
+                Quaternion spreadRotation = Quaternion.Euler(0f,0f,spreadAngle);
+                Vector2 spreadDirection = spreadRotation * barrelDirection;
+
                 //setting the position//
                 tankShell.transform.position = mainGunBarrel.position;
+
                 //setting the shell direction//
-                Vector2 barrelDirection = mainGunBarrel.up;
-                float angle = Mathf.Atan2(barrelDirection.y, barrelDirection.x) * Mathf.Rad2Deg - 90f;
+                float angle = Mathf.Atan2(spreadDirection.y, spreadDirection.x) * Mathf.Rad2Deg - 90f;
                 tankShell.transform.rotation = Quaternion.Euler(0f, 0f, angle);
                 //activating and shooting the shell//
+
+                mainGunSFX.Play();
                 tankShell.SetActive(true);
-                tankShell_RB.velocity = barrelDirection * shellVelocity;
+                tankShell_RB.velocity = spreadDirection * shellVelocity;
 
                 shellFired += 1;
                 StartCoroutine(MainGunReload());
                 StartCoroutine(MainGunMuzzleFlash());
+                
             }
         }
     }
@@ -90,6 +111,7 @@ public class TankShoot : MonoBehaviour
                 float angle = Mathf.Atan2(spreadDirection.y, spreadDirection.x) * Mathf.Rad2Deg - 90f;
                 tankCMG.transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
+                coaxialGunSFX.Play();
                 tankCMG.SetActive(true);
                 tankCMG_RB.velocity = spreadDirection * bulletVelocity;
 
@@ -109,5 +131,18 @@ public class TankShoot : MonoBehaviour
         coaxialGunMuzzleFlash.SetActive(true);
         yield return new WaitForSeconds(0.15f);
         coaxialGunMuzzleFlash.SetActive(false);
+    }
+    private void AccuracyCheck()
+    {
+        if(rb.velocity.magnitude != 0)
+        {
+            //moving
+            mainGunAccuracy = mainGunSpread;
+        }
+        else
+        {
+            //not moving
+            mainGunAccuracy = 0f;
+        }
     }
 }

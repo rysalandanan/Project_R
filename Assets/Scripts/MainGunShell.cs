@@ -1,19 +1,16 @@
 using System.Collections;
 using UnityEngine;
 
-public class Shell : MonoBehaviour
+public class MainGunShell : MonoBehaviour
 {
     public string hitTag;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        this.gameObject.SetActive(false);
         hitTag = collision.gameObject.tag;
-        
     }
     private void OnEnable()
     {
-        //if missed
         StartCoroutine(ShellDeactivate());
     }
     private IEnumerator ShellDeactivate()
