@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TankTurrentRotation : MonoBehaviour
+public class TankTurretTraverse : MonoBehaviour
 {
     [Header("Tank Turret Attributes")]
     [SerializeField] private float turretTraverseSpeed;
@@ -9,10 +9,13 @@ public class TankTurrentRotation : MonoBehaviour
     private Vector2 mousePos;
     private TankStatus tankstatus;
 
+    private void Start()
+    {
+        tankstatus = GetComponent<TankStatus>();
+    }
     private void Update()
     {
         mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-        tankstatus = GetComponent<TankStatus>();
     }
     private void FixedUpdate()
     {

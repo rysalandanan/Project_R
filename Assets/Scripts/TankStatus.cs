@@ -22,7 +22,7 @@ public class TankStatus : MonoBehaviour
     private Color damageColor = new Color(0.97f, 0.27f, 0.38f, 0.27f);
 
     private string statusReport;
-    private const float mobility_Kill_Chance = 80f;
+    private const float mobility_Kill_Chance = 30f;
 
     private void Start()
     {
@@ -70,7 +70,7 @@ public class TankStatus : MonoBehaviour
         float randomOutcome = Random.Range(0f, 100f);
         if (randomOutcome <= mobility_Kill_Chance)
         {
-            // 80% chance for mobility kill
+            // 30% chance for mobility kill
             if (shell.hitTag == "FrontArmor")
             {
                 canMove = false;
@@ -98,7 +98,7 @@ public class TankStatus : MonoBehaviour
                 tankEngine.color = damageColor;
             }
         }
-        else if (randomOutcome < 95f)
+        else if (randomOutcome <= 45f)
         {
             // 15% chance for one of the crew to be killed
             float randomCrewPick = Random.Range(0, 15);
@@ -134,7 +134,7 @@ public class TankStatus : MonoBehaviour
             }
 
         }
-        else
+        else if(randomOutcome <= 50)
         {
             Debug.Log("Hit the ammo rack!");
             //5% chance to hit the ammo rack
