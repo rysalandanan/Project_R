@@ -1,27 +1,33 @@
 using UnityEngine;
 
-public class EnemyMovement : MonoBehaviour
+public class EnemyTankMovement : MonoBehaviour
 {
-    [SerializeField] private Transform[] nodePoints;
+    [Header("Tank Movement Attributes")]
     [SerializeField] private float acceleration;
     [SerializeField] private float maxSpeed;
     [SerializeField] private GameObject hullTank;
     [SerializeField] private float hullTraverseSpeed;
+
+    [Header("Tank Movement Path")]
+    [SerializeField] private Transform[] pathNodes;
+    
     private int currentNodeIndex = 0;
     private Rigidbody2D rb;
     private Transform targetNode;
     private Vector2 direction;
     private bool isTraversing;
-    private EnemyTargeting targeting;
+    private TankTargeting targeting;
+    private EnemyTankStatus enemyTankStatus;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        targeting = GetComponent<EnemyTargeting>();
+        targeting = GetComponent<TankTargeting>();
+        enemyTankStatus = GetComponent<EnemyTankStatus>();
     }
     private void Update()
     {
-        if(!targeting.IsPlayerNear())
+        if(!targeting.IsTargetNear() && enemyTankStatus.CanMove())
         {
             MoveToNextNode();
         }
@@ -29,7 +35,7 @@ public class EnemyMovement : MonoBehaviour
 
     private void MoveToNextNode()
     {
-        if (nodePoints.Length == 0)
+        if (pathNodes.Length == 0)
         {
             return;
         }
@@ -44,7 +50,7 @@ public class EnemyMovement : MonoBehaviour
     }
     private void GetTargetNode()
     {
-        targetNode = nodePoints[currentNodeIndex];
+        targetNode = pathNodes[currentNodeIndex];
     }
     private void FindDirection()
     {
@@ -86,7 +92,7 @@ public class EnemyMovement : MonoBehaviour
         if (Vector3.Distance(transform.position, targetNode.position) < 0.1f)
         {
             // Move to the next node
-            currentNodeIndex = (currentNodeIndex + 1) % nodePoints.Length;
+            currentNodeIndex = (currentNodeIndex + 1) % pathNodes.Length;
         }
     }
 }
